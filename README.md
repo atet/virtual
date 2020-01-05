@@ -2,7 +2,7 @@
 
 [![.img/logo_docker.png](.img/logo_docker.png)](#nolink)
 
-# Introduction to Virtualization
+# Introduction to Virtualization (INCOMPLETE)
 
 **This tutorial is part of my series on System Administration:<br>I highly recommend finishing my<br>[15 Minute Introduction to Raspberry Pi](https://github.com/atet/learn/blob/master/raspberrypi/README.md#atet--learn--raspberrypi) and<br>[15 Minute Introduction to Network Attached Storage](https://github.com/atet/learn/blob/master/nas/README.md#atet--learn--nas)<br>to put the goals of this tutorial in a realistic context**
 
@@ -21,7 +21,7 @@
 * [0. Requirements](#0-requirements)
 * [1. Pi: Installation, Connection, Update](#1-pi-installation-connection-update)
 * [2. Game Plan](#2-game-plan)
-* [3. Docker Installation](#3-docker-installation)
+* [3. Docker Installation and Setup](#3-docker-installation-and-setup)
 * [4. Your First Container](#4-your-first-container)
 * [5. Craft Container](#5-craft-container)
 * [6. Nextcloud Container](#6-nextcloud-container)
@@ -89,8 +89,10 @@
 >
 > [Introduction to Information Technology](https://en.wikibooks.org/wiki/Introduction_to_Information_Technology/Virtualization#Introduction)
 
-**Recall from the previous tutorials using the **
+**Recall from the previous tutorials:**
 
+* You installed a bunch of programs
+* If you were lucky enough to make a mistake, you would've experienced the joys of starting over
 
 **This tutorial will setup your Raspberry Pi Zero W as a testbed to quickly install, configure, and test applications**
 
@@ -100,13 +102,82 @@
 
 --------------------------------------------------------------------------------------------------
 
-## 3. Docker Installation
+## 3. Docker Installation and Setup
+
+### 3.1. Dependencies
+
+```
+$ sudo apt update && \
+  sudo apt install -y \
+     apt-transport-https \
+     ca-certificates \
+     curl \
+     gnupg2 \
+     software-properties-common
+```
+
+### 3.2. Docker Installation
+
+* Add a security key to allow you to download from the official Docker repository
+* Verify that the key's fingerprint is "`9DC8 5822 9FC7 DD38 854A E2D8 8D81 803C 0EBF CD88`"
+
+```
+$ curl -fsSL https://download.docker.com/linux/$(. /etc/os-release; echo "$ID")/gpg | \
+  sudo apt-key add - && \
+  sudo apt-key fingerprint 0EBFCD88
+```
+
+* Add the Docker repository to your list of places to check for new programs to install
+
+```
+$ echo "deb [arch=armhf] https://download.docker.com/linux/$(. /etc/os-release; echo "$ID") \
+  $(lsb_release -cs) stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list
+```
+
+* Update list of sources and install Docker
+
+```
+$ sudo apt install -y --no-install-recommends \
+    docker-ce \
+    cgroupfs-mount
+```
+
+### 3.3. Docker Setup
+
+* Add the default user "`pi`" to the "`docker`" permissions group
+* **This will log you out**, just log back into your Pi
+
+```
+$ sudo usermod -aG docker $USER && \
+  exit
+```
+
+* Once you log back in, you need to start the docker service
+
+```
+$ sudo systemctl enable docker && \
+  sudo systemctl start docker
+```
 
 [Back to Top](#table-of-contents)
 
 --------------------------------------------------------------------------------------------------
 
 ## 4. Your First Container
+
+* A container is...
+* When you first run a new container, Docker will download all the necessary files you need to use it
+
+```
+$ docker run --rm arm32v7/hello-world
+```
+
+* You should see a lot of text after running the above command:
+
+```
+
+```
 
 [Back to Top](#table-of-contents)
 
