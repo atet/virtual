@@ -10,7 +10,7 @@
 
 * This introduction to virtualization only covers what's absolutely necessary to get you up and running
 * You are here because **you're tired of reinstalling operating systems and waiting for updates** when something goes wrong
-* We will be using the free and open source Docker CE framework on the $10 Raspberry Pi Zero W
+* We will be using the free and open source Docker framework on the $10 Raspberry Pi Zero W
 
 --------------------------------------------------------------------------------------------------
 
@@ -44,7 +44,7 @@
 
 ### Software
 
-* Windows: This tutorial was developed on Microsoft Windows 10 with Windows Subsystem for Linux (WSL) and [Docker CE v19.03.5](https://hub.docker.com/editions/community/docker-ce-server-debian)
+* Windows: This tutorial was developed on Microsoft Windows 10 with Windows Subsystem for Linux (WSL) and [Docker CE (Community Edition) v19.03.5](https://hub.docker.com/editions/community/docker-ce-server-debian)
 * MacOS: [Your Terminal program is Bash](https://en.wikipedia.org/wiki/Terminal_(macOS))
 * Linux: I recommend Ubuntu 18.04 LTS
 
@@ -84,19 +84,16 @@
 
 ## 2. Game Plan
 
+**Recall from the previous tutorials where we made a fun multiplayer Craft server and a Nextcloud file server**
 
-> "Virtualization is the creation of a simulated version of something else."
->
-> [Introduction to Information Technology](https://en.wikibooks.org/wiki/Introduction_to_Information_Technology/Virtualization#Introduction)
+* You had to _wait_ while burning the OS, _wait_ for OS install, _wait_ for updates, _wait_ while installing dependencies, _wait_ _wait_ _wait_...
+* If you were lucky enough to make a mistake and start over, you would've experienced the joys of.. **more coffee breaks**
 
-**Recall from the previous tutorials:**
+**This tutorial will setup your Pi Zero to quickly install and configure applications through virtualization with Docker, where:**
 
-* You installed a bunch of programs
-* If you were lucky enough to make a mistake, you would've experienced the joys of starting over
-
-**This tutorial will setup your Raspberry Pi Zero W as a testbed to quickly install, configure, and test applications**
-
-[![.img/step01a.png](.img/step01a.png)](#nolink)
+* Any mistakes will not permanently affect the Raspberry Pi's OS
+* How you install and configure programs are precisely written out as a document
+* You can use pre-made instructions to get a quick headstart or share your custom builds to help others
 
 [Back to Top](#table-of-contents)
 
@@ -104,7 +101,32 @@
 
 ## 3. Docker Installation and Setup
 
+**Log into your Raspberry Pi Zero W, these instructions are specific to this computer's hardware**
+
+### 3.1. Add Docker repository
+
+* Add a security key to allow you to download from the official Docker repository
+* Verify that the key's fingerprint is "`9DC8 5822 9FC7 DD38 854A E2D8 8D81 803C 0EBF CD88`"
+
+```
+$ curl -fsSL https://download.docker.com/linux/$(. /etc/os-release; echo "$ID")/gpg | \
+  sudo apt-key add - && \
+  sudo apt-key fingerprint 0EBFCD88
+```
+
+[![.img/step03a.png](.img/step03a.png)](#nolink)
+
+* Add the Docker repository to your list of places to check for new programs to install
+
+```
+$ echo "deb [arch=armhf] https://download.docker.com/linux/$(. /etc/os-release; echo "$ID") \
+  $(lsb_release -cs) stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list
+```
+
 ### 3.1. Dependencies
+
+* Install the following dependencies:
 
 ```
 $ sudo apt update && \
@@ -118,25 +140,6 @@ $ sudo apt update && \
 
 ### 3.2. Docker Installation
 
-* Add a security key to allow you to download from the official Docker repository
-* Verify that the key's fingerprint is "`9DC8 5822 9FC7 DD38 854A E2D8 8D81 803C 0EBF CD88`"
-
-```
-$ curl -fsSL https://download.docker.com/linux/$(. /etc/os-release; echo "$ID")/gpg | \
-  sudo apt-key add - && \
-  sudo apt-key fingerprint 0EBFCD88
-```
-
-* Add the Docker repository to your list of places to check for new programs to install
-
-```
-$ echo "deb [arch=armhf] https://download.docker.com/linux/$(. /etc/os-release; echo "$ID") \
-  $(lsb_release -cs) stable" | \
-  sudo tee /etc/apt/sources.list.d/docker.list
-```
-
-* Update list of sources and install Docker
-
 ```
 $ sudo apt install -y --no-install-recommends \
     docker-ce \
@@ -145,20 +148,28 @@ $ sudo apt install -y --no-install-recommends \
 
 ### 3.3. Docker Setup
 
-* Add the default user "`pi`" to the "`docker`" permissions group
+* Add the default user "`pi`" to the "`docker`" permissions group and log out for the change to take effect running `sudo usermod -aG docker $USER && exit`
 * **This will log you out**, just log back into your Pi
 
 ```
-$ sudo usermod -aG docker $USER && \
-  exit
+$ sudo usermod -aG docker $USER && exit
+
+logout
+Connection to <PI'S IP ADDRESS> closed.
+
+$ ssh pi@<PI'S IP ADDRESS>
 ```
 
-* Once you log back in, you need to start the docker service
+* Once you log back in, you need to start the Docker service
 
 ```
 $ sudo systemctl enable docker && \
   sudo systemctl start docker
 ```
+
+* Once this runs without errors, you can move on to the next section
+
+[![.img/step03b.png](.img/step03b.png)](#nolink)
 
 [Back to Top](#table-of-contents)
 
@@ -166,18 +177,49 @@ $ sudo systemctl enable docker && \
 
 ## 4. Your First Container
 
-* A container is...
-* When you first run a new container, Docker will download all the necessary files you need to use it
+* A container is the virtual simulation of another computer within your computer
+* The following line will start a simulation of a barebones Linux computer that will just **print out a message for you**:
 
 ```
-$ docker run --rm arm32v7/hello-world
+$ docker run --name my_first_container hypriot/armhf-hello-world
 ```
 
-* You should see a lot of text after running the above command:
+[![.img/step04a.png](.img/step04a.png)](#nolink)
+
+* You can check what containers you have made by running the following:
 
 ```
+$ docker ps -a
+```
+
+* In order to make this container, Docker had to download an "image" of the barebones Linux installation
+* You can check what images you have downloaded by running the following:
 
 ```
+$ docker images -a
+```
+
+* Note that both containers and images are identified by names:
+   * We gave our first container the name of "`my_first_container`" using the "`--name`" flag
+   * The image we downloaded can be identified by "`hypriot/armhf-hello-world`"
+
+[![.img/step04b.png](.img/step04b.png)](#nolink)
+
+* Since we don't need the container or the image for the rest of this tutorial, we can **delete them to regain disk space**:
+
+```
+$ docker rm my_first_container
+$ docker rmi hypriot/armhf-hello-world
+```
+
+* Confirm deletion by running "`docker ps -a && docker images -a`" and checking that the results are empty
+
+[![.img/step04c.png](.img/step04c.png)](#nolink)
+
+**Congratulations!**
+
+* You have made your first Docker container
+* Now let's see how useful Docker can really be in the next two sections
 
 [Back to Top](#table-of-contents)
 
@@ -185,11 +227,52 @@ $ docker run --rm arm32v7/hello-world
 
 ## 5. Craft Container
 
+**If you recall from my [15 Minute Introduction to Raspberry Pi](https://github.com/atet/learn/blob/master/raspberrypi/README.md#atet--learn--raspberrypi), we made a Craft multiplayer game server**
+
+* We'll use Docker to build the same Craft server using just a list of instructions
+* These instructions are put into a "`Dockerfile`"
+* Let's make a new directory to put the file in:
+
+```
+$ cd ~ && mkdir Craft && cd ~/Craft
+```
+
+
+
+* While Docker builds the image based on the `Dockerfile`, let's take a look at the file's instructions:
+
+```
+FROM balenalib/raspberry-pi-debian:buster
+MAINTAINER Athit Kao (github.com/atet)
+RUN printf "deb-src http://raspbian.raspberrypi.org/raspbian/ buster main contrib non-free rpi" >> \
+   /etc/apt/sources.list
+RUN apt-get update
+RUN apt-get install -y apt-utils 
+RUN apt-get install -y python-pip cmake libglew-dev xorg-dev libcurl4-openssl-dev doxygen git
+RUN apt-get -y build-dep glfw
+RUN python -m pip install requests
+RUN git clone https://github.com/fogleman/Craft.git /usr/local/Craft
+WORKDIR "/usr/local/Craft/"
+RUN cmake -Wno-dev .
+RUN make
+RUN gcc -std=c99 -O3 -fPIC -shared -o world -I src -I \
+   deps/noise \
+   deps/noise/noise.c \
+   src/world.c
+RUN cp server.py server.py.BAK && \
+   sed "s/AUTH_REQUIRED = True/AUTH_REQUIRED = False/" server.py.BAK > \
+   server.py
+EXPOSE 4080
+CMD ["python", "./server.py"]
+```
+
 [Back to Top](#table-of-contents)
 
 --------------------------------------------------------------------------------------------------
 
 ## 6. Nextcloud Container
+
+* Since this file must be named "`Dockerfile`", it's best practice to make a separate descriptive directories if you have multiple
 
 [Back to Top](#table-of-contents)
 
@@ -208,6 +291,10 @@ $ docker run --rm arm32v7/hello-world
 --------------------------------------------------------------------------------------------------
 
 ## 9. Next Steps
+
+
+
+
 
 [Back to Top](#table-of-contents)
 
