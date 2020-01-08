@@ -25,12 +25,12 @@
 * [4. Your First Container](#4-your-first-container)
 * [5. Craft Container](#5-craft-container)
 * [6. Nextcloud Container](#6-nextcloud-container)
-* [7. Docker Files](#7-docker-files)
-* [8. Epilogue](#8-epilogue)
-* [9. Next Steps](#9-next-steps)
+* [7. Epilogue](#7-epilogue)
+* [8. Next Steps](#8-next-steps)
 
 ### Supplemental
 
+* [`Dockerfile`s](#dockerfiles)
 * [Need More Containers?](#need-more-containers)
 * [Other Resources](#other-resources)
 * [Troubleshooting](#troubleshooting)
@@ -169,9 +169,9 @@ $ sudo systemctl enable docker && \
 
 ## 4. Your First Container
 
-**A container is the virtual simulation of another computer within your computer**
-
-[![.img/step04a.png](.img/step04a.png)](#nolink)
+> **A container is the virtual simulation of another computer _within_ your computer**
+>
+> [![.img/step04a.png](.img/step04a.png)](#nolink)
 
 ### 4.1. Download and run
 
@@ -181,7 +181,7 @@ $ sudo systemctl enable docker && \
 $ docker run --name my_first_container hypriot/armhf-hello-world
 ```
 
-* You can see the message of "`Hello from Docker`" in your console coming from the virtualized Linux computer in your Pi
+* You can see the message of "`Hello from Docker.`" in your console coming from the virtualized Linux computer in your Pi
 
 [![.img/step04b.png](.img/step04b.png)](#nolink)
 
@@ -245,13 +245,14 @@ $ cd ~ && mkdir Craft && cd ~/Craft && \
 
 ### 5.2. Image build
 
-* Now that we have the instructions, let's build the image:
-   * Coffee break #2: **This will take about 60 mins. to build**, but you can review the next point which talks about the anatomy of a `Dockerfile` while you wait
-   * **IMPORTANT**: At about an hour, if you don't see the terminal going back to "`pi@raspberrypi:~/Craft $ _`" the screen may be "stuck", just click on the terminal and press Enter a couple times
+* Now that we have the instructions, let's build the image by running this next command:
+   * Coffee break #2: **This will take 45 mins. to build**, but you can review the next point which talks about the anatomy of a `Dockerfile` while you wait
 
-```
-$ docker image build -t craft_image .
-```
+> ```
+> $ docker image build -t craft_image .
+> ```
+>
+> **IMPORTANT**: After 45 mins., if you don't see the terminal going back to "`pi@raspberrypi:~/Craft $ _`" the screen may be "stuck", just click on the terminal and press Enter a couple times
 
 **While Docker builds the image, let's take a look at the
  `Dockerfile`**
@@ -291,15 +292,15 @@ $ docker run -d -p 4080:4080 --name craft_container craft_image
 
 ### 5.5. Cleanup
 
-* Once you're done playing some Craft, let's erase this container for now (this will not erase the underlying image you just spent an hour building)
+* Once you're done playing some Craft, let's erase this container for now (this won't erase the underlying image you built)
 
 ```
 $ docker rm craft_container
 ```
 
 * **Oh no!** Looks like we can't erase an actively running container
-* Unlike our first container that just printed out "`Hello from Docker`" and shut itself down, `craft_container` will remain active
-* Let's stop the container, remove (a.k.a erase) it, and confirm it's gone:
+* Unlike our first container that just printed out "`Hello from Docker.`" and shut itself down, `craft_container` will remain active
+* Let's stop the container first, then erase it (and confirm it's gone):
 
 ```
 $ docker stop craft_container
@@ -331,24 +332,25 @@ $ cd ~ && mkdir Nextcloud && cd ~/Nextcloud && \
 ### 6.2. Image build
 
 * Now that we have the instructions, let's build the image:
-   * Coffee break #3: This will take about 20 mins. to build, but you can review the next point which talks about the anatomy of a `Dockerfile` while you wait
-   * **IMPORTANT**: At about an hour, if you don't see the terminal going back to "`pi@raspberrypi:~/Craft $ _`" the screen may be "stuck", just click on the terminal and press Enter a couple times
+   * Coffee break #3: This will take 20 mins. to build, but you can review the next point which talks saving time with layers
 
-```
-$ docker image build -t nextcloud_image .
-```
+> ```
+> $ docker image build -t nextcloud_image .
+> ```
+> 
+> **IMPORTANT**: At about 20 mins., if you don't see the terminal going back to "`pi@raspberrypi:~/Craft $ _`" the screen may be "stuck", just click on the terminal and press Enter a couple times
 
 **While Docker builds the image, let's talk about "`layers`"**
 
-* _Did you notice that the first few commands ran almost instantaneously?_
-* That's because the previous Craft image we built already downloaded the base image and ran the same first four commands
-* **Docker will save similar layers to save time**: This probably shaved off a good 10 minutes!
+* _Did you notice that the first few `Dockerfile` commands ran almost instantaneously?_
+* That's because the previous Craft image build already downloaded the base image and ran the same first four commands
+* **Docker will keep these layers to save time**: This probably shaved off a good 10 minutes!
 
 [![.img/step06a.png](.img/step06a.png)](#nolink)
 
 ### 6.3. Deploy container
 
-* Once the image is done building, we will deploy a container based on "`nexctloud_image`":
+* Once the image is done building, we will deploy a container named "`nextcloud_container`" based on "`nexctloud_image`" we built:
 
 ```
 $ docker run -d -p 80:80 --name nextcloud_container nextcloud_image
@@ -356,41 +358,145 @@ $ docker run -d -p 80:80 --name nextcloud_container nextcloud_image
 
 ### 6.4. Connect to Nextcloud server
 
-* You can now connect to the `nextcloud_container` by the Pi's IP address from you web browser
-* **Trying to setup the same way before produced an error!**
-* It looks like we never setup the MariaDB database...
+* You can now connect to the `nextcloud_container` by the Pi's IP address from your web browser
+   * Choose a username and password for the Nextcloud administrator account
+   * Data Folder: Leave as default "/var/www/html/nextcloud/data"
+   * Database user: "ncuser"
+   * Database password: "password"
+   * Database name: "nextcloud"
+   * Database host: "localhost"
 
 [![.img/step06b.png](.img/step06b.png)](#nolink)
 
-[Back to Top](#table-of-contents)
+* **Trying to setup the same way as before produced an error!**
+* Looks like we never actually setup the MariaDB database...
+* **We must shut down and erase** the `nextcloud_container` before we move on:
+
+> ```
+> $ docker stop nextcloud_container && \
+>   docker rm nextcloud_container
+> ```
+> 
+> **IMPORTANT**: Shut down and erase the `nextcloud_container` before moving on
 
 ### 6.5. "_One service per container_"
 
+> Docker best practice is to "containerize" individual services separately (e.g. web server, database, etc.)
+> 
+> [![.img/step06f.png](.img/step06f.png)](#nolink)
 
+* Let's run a separate MariaDB container for Nextcloud from my Docker Hub:
+
+```
+$ docker run -d --name mariadb_container atetkao/mariadb_image:latest
+```
+
+[![.img/step06c.png](.img/step06c.png)](#nolink)
+
+* Now that the previous `nextcloud_container` is erased, we will make a new one that "links" to the `mariadb_container`:
+
+```
+$ docker run -d -p 80:80 --name nextcloud_container --link mariadb_container nextcloud_image && \
+  docker ps -a
+```
+
+[![.img/step06d.png](.img/step06d.png)](#nolink)
+
+* Now that we see both `nextcloud_container` and `mariadb_container` up and running, we can go back to our web browser and successfully finish the Nextcloud setup:
+   * Use the same credentials above **BUT change database host to: "mariadb_container"**
+   * Setup processing will take ~5 mins.
+
+[![.img/step06e.png](.img/step06e.png)](#nolink)
+
+### 6.6. Cleanup
+
+* You now have a fully functioning Nextcloud file server, but **don't use it for real quite yet!**
+   * **WARNING: Any files saved on this Nextcloud container will be erased when the containers shut down!**
+   * There are a few more bits and pieces to make data persistent which won't be covered here
+* Before we shut everything down, let's have some fun and start back up the Craft container:
+
+```
+$ docker run -d -p 4080:4080 --name craft_container craft_image
+```
+[![.img/step06g.png](.img/step06g.png)](#nolink)
+
+**Wow, not bad for a $10 computer to be running all this!**
+
+* Let's shut everything down for the night:
+
+```
+$ docker ps -a && \
+  docker stop $(docker ps -a -q) && \
+  docker rm $(docker ps -a -q) && \
+  docker ps -a
+```
+
+[![.img/step06h.png](.img/step06h.png)](#nolink)
+
+[Back to Top](#table-of-contents)
 
 --------------------------------------------------------------------------------------------------
 
-## 7. Docker Files
+## 7. Epilogue
+
+* I hope the practical experience from my three tutorials using the Raspberry Pi illuminates how useful Docker can be:
+   * Test different configurations of your "stack" of services (e.g. Apache + MariaDB) without affecting the host computer
+   * Quickly use other's known configurations
+* Although you can set up the Nextcloud container to persist data, for the most part, Docker containers are meant to be "ephemeral" (i.e. they do their thing and then disappear)
+
+> [![.img/step08a.png](.img/step08a.png)](#nolink)
+> 
+> _Mr. Meeseeks<sup>[[2]](#acknowledgments)</sup> are summoned to perform a single job and disappear_
+
+* We ran multiple containers in the last section; just know that if the service you're containerizing needs to connect to the "outside" (e.g. the Apache webserver needs to serve webpages to your browser), **it must be using an unassigned port**:
+
+> [![.img/step08b.png](.img/step08b.png)](#nolink)
+>
+> _The three containers are each using different ports: 4080, 80, and 3306_
+
+[Back to Top](#table-of-contents)
+
+--------------------------------------------------------------------------------------------------
+
+## 8. Next Steps
+
+**We touched on a bunch of different IT tasks here; you're easily on your way to becoming a self-sufficient ["techie"](https://www.merriam-webster.com/dictionary/techie), it just takes a lot of experimenting and completing projects like this**
+
+* Try this tutorial one more time to solidify these concepts
+* See how many containers you can run on your Pi Zero
+* Explore more advanced topics such as [persisting data with volumes](https://docs.docker.com/storage/volumes/)
+* Read [more about `Dockerfiles`](https://docs.docker.com/v17.09/engine/userguide/eng-image/dockerfile_best-practices/)
+
+[Back to Top](#table-of-contents)
+
+--------------------------------------------------------------------------------------------------
+
+## `Dockerfile`s
 
 **A quick recap on `Dockerfile`s**
 
+### A. The anatomy of a `Dockerfile`
+
 * These files must be named "`Dockerfile`", so if you have multiples, organize them by differently named directories
+* They lists out all the commands we ran in the other tutorials with a few extra Docker syntax (e.g. "`FROM`",  "`RUN`", etc.)
+* A brief description of each section of commands from Craft server's `Dockerfile`:
 
-[Back to Top](#table-of-contents)
+> [![.img/step05a.png](.img/step05a.png)](#nolink)
+> 
+> 1. "`FROM`" is a base image that this new image will start off from
+> 2. Downloading all the dependencies
+> 3. Downloading Craft files from GitHub
+> 4. Building the Craft server program
+> 5. Making a change to the "`server.py`" file
+> 6. "`EXPOSE`" will allow the outside world to communicate to the container
+> 7. "`CMD`" will run the "`server.py`" program
 
---------------------------------------------------------------------------------------------------
+### B. Layers
 
-## 8. Epilogue
+* Docker will reuse the same images and layers to save time
+* We've seen this when we built the Nextcloud image after the Craft image:
 
-[Back to Top](#table-of-contents)
-
---------------------------------------------------------------------------------------------------
-
-## 9. Next Steps
-
-
-
-
+[![.img/step06a.png](.img/step06a.png)](#nolink)
 
 [Back to Top](#table-of-contents)
 
@@ -398,11 +504,26 @@ $ docker run -d -p 80:80 --name nextcloud_container nextcloud_image
 
 ## Need More Containers?
 
-* The Raspberry Pi Zero is amazing for its price point, [but it's not going to run multiple containters](); this brand has other more powerful and more expensive computers if you need the horsepower
+* The Raspberry Pi Zero is amazing for its price point, [but it's not going to run multiple containters]()
+* This brand has other more powerful computers if you need the horsepower, or you can look into **Docker Swarm** to cluster together multiple Pi Zeros: https://blog.hypriot.com/post/how-to-setup-rpi-docker-swarm/
 
-> [![.img/nmc.png](.img/nmc.png)](#nolink)
->
-> 
+[![.img/nmc.png](.img/nmc.png)](#nolink)
+
+[Back to Top](#table-of-contents)
+
+--------------------------------------------------------------------------------------------------
+
+## Share Your Build!
+
+**There are several ways to share your build to help your community**
+
+### Github
+
+* Just like the first couple `Dockerfile`s you used, they were simply hosted on my GitHub, e.g. https://raw.githubusercontent.com/atet/learn/master/virtual/Craft/Dockerfile
+
+
+### Docker Hub
+
 
 [Back to Top](#table-of-contents)
 
@@ -431,6 +552,7 @@ Docker seems to be frozen or hanging | Click on the terminal and press Enter a c
 ## Acknowledgments
 
 1. Docker CE (Community Edition), the free, open-source virtualization framework: https://www.docker.com/
+2. Rick and Morty, Mr. Meeseeks © The Cartoon Network, Inc.
 
 [Back to Top](#table-of-contents)
 
