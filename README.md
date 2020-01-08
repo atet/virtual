@@ -101,32 +101,29 @@
 
 ## 3. Docker Installation and Setup
 
-**Log into your Raspberry Pi Zero W, these instructions are specific to this computer's hardware**
+**Log into your Raspberry Pi Zero W: These instructions are specific to the Pi Zero's hardware and may not work on other computers**
 
 ### 3.1. Add Docker repository
 
-* Add a security key to allow you to download from the official Docker repository
-* Verify that the key's fingerprint is "`9DC8 5822 9FC7 DD38 854A E2D8 8D81 803C 0EBF CD88`"
+* Add a security key to allow you to download from the official Docker repository:
 
 ```
 $ curl -fsSL https://download.docker.com/linux/$(. /etc/os-release; echo "$ID")/gpg | \
   sudo apt-key add - && \
+  echo "deb [arch=armhf] https://download.docker.com/linux/$(. /etc/os-release; echo "$ID") \
+  $(lsb_release -cs) stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list && \
   sudo apt-key fingerprint 0EBFCD88
 ```
 
+* Verify that the key's fingerprint is "`9DC8 5822 9FC7 DD38 854A E2D8 8D81 803C 0EBF CD88`"
+
 [![.img/step03a.png](.img/step03a.png)](#nolink)
 
-* Add the Docker repository to your list of places to check for new programs to install
+### 3.1. Docker installation
 
-```
-$ echo "deb [arch=armhf] https://download.docker.com/linux/$(. /etc/os-release; echo "$ID") \
-  $(lsb_release -cs) stable" | \
-  sudo tee /etc/apt/sources.list.d/docker.list
-```
-
-### 3.1. Dependencies
-
-* Install the following dependencies:
+* Install the following dependencies and Docker:
+   * Coffee break: This will take ~10 mins. and you don't need to babysit this
 
 ```
 $ sudo apt update && \
@@ -135,18 +132,13 @@ $ sudo apt update && \
      ca-certificates \
      curl \
      gnupg2 \
-     software-properties-common
+     software-properties-common && \
+  sudo apt install -y --no-install-recommends \
+     docker-ce \
+     cgroupfs-mount
 ```
 
-### 3.2. Docker Installation
-
-```
-$ sudo apt install -y --no-install-recommends \
-    docker-ce \
-    cgroupfs-mount
-```
-
-### 3.3. Docker Setup
+### 3.2. Docker Setup
 
 * Add the default user "`pi`" to the "`docker`" permissions group and log out for the change to take effect running `sudo usermod -aG docker $USER && exit`
 * **This will log you out**, just log back into your Pi
@@ -160,7 +152,7 @@ Connection to <PI'S IP ADDRESS> closed.
 $ ssh pi@<PI'S IP ADDRESS>
 ```
 
-* Once you log back in, you need to start the Docker service
+* Once you log back in, you must start the Docker service
 
 ```
 $ sudo systemctl enable docker && \
@@ -177,14 +169,23 @@ $ sudo systemctl enable docker && \
 
 ## 4. Your First Container
 
-* A container is the virtual simulation of another computer within your computer
+**A container is the virtual simulation of another computer within your computer**
+
+[![.img/step04a.png](.img/step04a.png)](#nolink)
+
+### 4.1. Download and run
+
 * The following line will start a simulation of a barebones Linux computer that will just **print out a message for you**:
 
 ```
 $ docker run --name my_first_container hypriot/armhf-hello-world
 ```
 
-[![.img/step04a.png](.img/step04a.png)](#nolink)
+* You can see the message of "`Hello from Docker`" in your console coming from the virtualized Linux computer in your Pi
+
+[![.img/step04b.png](.img/step04b.png)](#nolink)
+
+### 4.2. Check status
 
 * You can check what containers you have made by running the following:
 
@@ -192,18 +193,20 @@ $ docker run --name my_first_container hypriot/armhf-hello-world
 $ docker ps -a
 ```
 
-* In order to make this container, Docker had to download an "image" of the barebones Linux installation
-* You can check what images you have downloaded by running the following:
+* For Docker to make this container, an "image" of the barebones Linux installation had to be downloaded
+* You can check what images you've downloaded by running the following:
 
 ```
 $ docker images -a
 ```
 
 * Note that both containers and images are identified by names:
-   * We gave our first container the name of "`my_first_container`" using the "`--name`" flag
+   * We gave our container the name of "`my_first_container`" using the "`--name`" flag
    * The image we downloaded can be identified by "`hypriot/armhf-hello-world`"
 
-[![.img/step04b.png](.img/step04b.png)](#nolink)
+[![.img/step04c.png](.img/step04c.png)](#nolink)
+
+### 4.3. Cleanup
 
 * Since we don't need the container or the image for the rest of this tutorial, we can **delete them to regain disk space**:
 
@@ -214,11 +217,11 @@ $ docker rmi hypriot/armhf-hello-world
 
 * Confirm deletion by running "`docker ps -a && docker images -a`" and checking that the results are empty
 
-[![.img/step04c.png](.img/step04c.png)](#nolink)
+[![.img/step04d.png](.img/step04d.png)](#nolink)
 
 **Congratulations!**
 
-* You have made your first Docker container
+* You have run your first Docker container
 * Now let's see how useful Docker can really be in the next two sections
 
 [Back to Top](#table-of-contents)
@@ -229,42 +232,82 @@ $ docker rmi hypriot/armhf-hello-world
 
 **If you recall from my [15 Minute Introduction to Raspberry Pi](https://github.com/atet/learn/blob/master/raspberrypi/README.md#atet--learn--raspberrypi), we made a Craft multiplayer game server**
 
-* We'll use Docker to build the same Craft server using just a list of instructions
+### 5.1. `Dockerfile`
+
+* We'll use Docker to automatically build the same Craft server using just a list of instructions
 * These instructions are put into a "`Dockerfile`"
-* Let's make a new directory to put the file in:
+* Let's make a new directory and download this file from my GitHub:
 
 ```
-$ cd ~ && mkdir Craft && cd ~/Craft
+$ cd ~ && mkdir Craft && cd ~/Craft && \
+  wget https://raw.githubusercontent.com/atet/learn/master/virtual/Craft/Dockerfile
 ```
 
+### 5.2. Image build
 
-
-* While Docker builds the image based on the `Dockerfile`, let's take a look at the file's instructions:
+* Now that we have the instructions, let's build the image:
+   * Coffee break #2: **This will take about 60 mins. to build**, but you can review the next point which talks about the anatomy of a `Dockerfile` while you wait
+   * **IMPORTANT**: At about an hour, if you don't see the terminal going back to "`pi@raspberrypi:~/Craft $ _`" the screen may be "stuck", just click on the terminal and press Enter a couple times
 
 ```
-FROM balenalib/raspberry-pi-debian:buster
-MAINTAINER Athit Kao (github.com/atet)
-RUN printf "deb-src http://raspbian.raspberrypi.org/raspbian/ buster main contrib non-free rpi" >> \
-   /etc/apt/sources.list
-RUN apt-get update
-RUN apt-get install -y apt-utils 
-RUN apt-get install -y python-pip cmake libglew-dev xorg-dev libcurl4-openssl-dev doxygen git
-RUN apt-get -y build-dep glfw
-RUN python -m pip install requests
-RUN git clone https://github.com/fogleman/Craft.git /usr/local/Craft
-WORKDIR "/usr/local/Craft/"
-RUN cmake -Wno-dev .
-RUN make
-RUN gcc -std=c99 -O3 -fPIC -shared -o world -I src -I \
-   deps/noise \
-   deps/noise/noise.c \
-   src/world.c
-RUN cp server.py server.py.BAK && \
-   sed "s/AUTH_REQUIRED = True/AUTH_REQUIRED = False/" server.py.BAK > \
-   server.py
-EXPOSE 4080
-CMD ["python", "./server.py"]
+$ docker image build -t craft_image .
 ```
+
+**While Docker builds the image, let's take a look at the
+ `Dockerfile`**
+
+* This file basically lists out all the commands we ran in the other tutorial with a few extra Docker syntax (e.g. "`FROM`",  "`RUN`", etc.)
+* A brief description of each section of commands:
+
+> [![.img/step05a.png](.img/step05a.png)](#nolink)
+> 
+> 1. "`FROM`" is a base image that this new image will start off from
+> 2. Downloading all the dependencies
+> 3. Downloading Craft files from GitHub
+> 4. Building the Craft server program
+> 5. Making a change to the "`server.py`" file
+> 6. "`EXPOSE`" will allow the outside world to communicate to the container
+> 7. "`CMD`" will run the "`server.py`" program
+
+### 5.3. Deploy container
+
+* Once the image is done building, we will deploy a container based on "`craft_image`":
+
+```
+$ docker run -d -p 4080:4080 --name craft_container craft_image
+```
+
+* **Did anything happen?** I just got a bunch of random characters?
+* Run "`docker ps -a`" and you'll see that the "`STATUS`" is that the container is "`UP`" an running
+
+[![.img/step05b.png](.img/step05b.png)](#nolink)
+
+### 5.4. Connect to Craft server
+
+* You can now connect to the `craft_container` by the Pi's IP address
+* [Click here if you need to go through the Craft client tutorial again](https://github.com/atet/learn/tree/master/raspberrypi#6-craft-client)
+
+[![.img/step05c.png](.img/step05c.png)](#nolink)
+
+### 5.5. Cleanup
+
+* Once you're done playing some Craft, let's erase this container for now (this will not erase the underlying image you just spent an hour building)
+
+```
+$ docker rm craft_container
+```
+
+* **Oh no!** Looks like we can't erase an actively running container
+* Unlike our first container that just printed out "`Hello from Docker`" and shut itself down, `craft_container` will remain active
+* Let's stop the container, remove (a.k.a erase) it, and confirm it's gone:
+
+```
+$ docker stop craft_container
+$ docker rm craft_container
+$ docker ps -a
+```
+
+[![.img/step05d.png](.img/step05d.png)](#nolink)
 
 [Back to Top](#table-of-contents)
 
@@ -272,13 +315,66 @@ CMD ["python", "./server.py"]
 
 ## 6. Nextcloud Container
 
-* Since this file must be named "`Dockerfile`", it's best practice to make a separate descriptive directories if you have multiple
+**If you recall from my [15 Minute Introduction to Network Attached Storage](https://github.com/atet/learn/blob/master/nas/README.md#atet--learn--nas), we made a Nextcloud file server**
+
+### 6.1. `Dockerfile`
+
+* We'll use Docker to automatically build the same Nextcloud server using a "`Dockerfile`"
+* Let's make a new directory and download this file from my GitHub:
+   * Remember: This file must be named "`Dockerfile`", so it's best practice to separate them by directories (e.g. different directories for Craft and Nextcloud)
+
+```
+$ cd ~ && mkdir Nextcloud && cd ~/Nextcloud && \
+  wget https://raw.githubusercontent.com/atet/learn/master/virtual/Nextcloud/Dockerfile
+```
+
+### 6.2. Image build
+
+* Now that we have the instructions, let's build the image:
+   * Coffee break #3: This will take about 20 mins. to build, but you can review the next point which talks about the anatomy of a `Dockerfile` while you wait
+   * **IMPORTANT**: At about an hour, if you don't see the terminal going back to "`pi@raspberrypi:~/Craft $ _`" the screen may be "stuck", just click on the terminal and press Enter a couple times
+
+```
+$ docker image build -t nextcloud_image .
+```
+
+**While Docker builds the image, let's talk about "`layers`"**
+
+* _Did you notice that the first few commands ran almost instantaneously?_
+* That's because the previous Craft image we built already downloaded the base image and ran the same first four commands
+* **Docker will save similar layers to save time**: This probably shaved off a good 10 minutes!
+
+[![.img/step06a.png](.img/step06a.png)](#nolink)
+
+### 6.3. Deploy container
+
+* Once the image is done building, we will deploy a container based on "`nexctloud_image`":
+
+```
+$ docker run -d -p 80:80 --name nextcloud_container nextcloud_image
+```
+
+### 6.4. Connect to Nextcloud server
+
+* You can now connect to the `nextcloud_container` by the Pi's IP address from you web browser
+* **Trying to setup the same way before produced an error!**
+* It looks like we never setup the MariaDB database...
+
+[![.img/step06b.png](.img/step06b.png)](#nolink)
 
 [Back to Top](#table-of-contents)
+
+### 6.5. "_One service per container_"
+
+
 
 --------------------------------------------------------------------------------------------------
 
 ## 7. Docker Files
+
+**A quick recap on `Dockerfile`s**
+
+* These files must be named "`Dockerfile`", so if you have multiples, organize them by differently named directories
 
 [Back to Top](#table-of-contents)
 
@@ -316,9 +412,7 @@ CMD ["python", "./server.py"]
 
 Description | Link
 --- | ---
-Official Raspberry Pi Help | https://www.raspberrypi.org/help/
-Official Raspberry Pi Getting Started Guide | https://projects.raspberrypi.org/en/pathways/getting-started-with-raspberry-pi
-Official Raspberry Pi Project Ideas | https://projects.raspberrypi.org/en/
+Official `Dockerfile` Best Practices | https://docs.docker.com/v17.09/engine/userguide/eng-image/dockerfile_best-practices/
 
 [Back to Top](#table-of-contents)
 
@@ -328,6 +422,7 @@ Official Raspberry Pi Project Ideas | https://projects.raspberrypi.org/en/
 
 Issue | Solution
 --- | ---
+Docker seems to be frozen or hanging | Click on the terminal and press Enter a couple times, if that doesn't work, you may have to wait a while longer
 
 [Back to Top](#table-of-contents)
 
