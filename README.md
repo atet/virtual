@@ -2,7 +2,7 @@
 
 [![.img/logo_docker.png](.img/logo_docker.png)](#nolink)
 
-# Introduction to Virtualization (INCOMPLETE)
+# Introduction to Virtualization
 
 **This tutorial is part of my series on System Administration:<br>I highly recommend finishing my<br>[15 Minute Introduction to Raspberry Pi](https://github.com/atet/learn/blob/master/raspberrypi/README.md#atet--learn--raspberrypi) and<br>[15 Minute Introduction to Network Attached Storage](https://github.com/atet/learn/blob/master/nas/README.md#atet--learn--nas)<br>to put the goals of this tutorial in a realistic context**
 
@@ -93,7 +93,7 @@
 
 * Any mistakes will not permanently affect the Raspberry Pi's OS
 * How you install and configure programs are precisely written out as a document
-* You can use pre-made instructions to get a quick headstart or share your custom builds to help others
+* You can use pre-made instructions to get a quick head start or share your custom builds to help others
 
 [Back to Top](#table-of-contents)
 
@@ -254,7 +254,7 @@ $ cd ~ && mkdir Craft && cd ~/Craft && \
 >
 > **IMPORTANT**: After 45 mins., if you don't see the terminal going back to "`pi@raspberrypi:~/Craft $ _`" the screen may be "stuck", just click on the terminal and press Enter a couple times
 
-**While Docker builds the image, let's take a look at the
+**While Docker builds the image, let's look at the
  `Dockerfile`**
 
 * This file basically lists out all the commands we ran in the other tutorial with a few extra Docker syntax (e.g. "`FROM`",  "`RUN`", etc.)
@@ -279,7 +279,7 @@ $ docker run -d -p 4080:4080 --name craft_container craft_image
 ```
 
 * **Did anything happen?** I just got a bunch of random characters?
-* Run "`docker ps -a`" and you'll see that the "`STATUS`" is that the container is "`UP`" an running
+* Run "`docker ps -a`" and you'll see that the "`STATUS`" is that the container is "`UP`" and running
 
 [![.img/step05b.png](.img/step05b.png)](#nolink)
 
@@ -350,7 +350,7 @@ $ cd ~ && mkdir Nextcloud && cd ~/Nextcloud && \
 
 ### 6.3. Deploy container
 
-* Once the image is done building, we will deploy a container named "`nextcloud_container`" based on "`nexctloud_image`" we built:
+* Once the image is done building, we will deploy a container named "`nextcloud_container`" based on "`nextcloud_image`" we built:
 
 ```
 $ docker run -d -p 80:80 --name nextcloud_container nextcloud_image
@@ -478,7 +478,7 @@ $ docker ps -a && \
 ### A. The anatomy of a `Dockerfile`
 
 * These files must be named "`Dockerfile`", so if you have multiples, organize them by differently named directories
-* They lists out all the commands we ran in the other tutorials with a few extra Docker syntax (e.g. "`FROM`",  "`RUN`", etc.)
+* They list out all the commands we ran in the other tutorials with a few extra Docker syntax (e.g. "`FROM`",  "`RUN`", etc.)
 * A brief description of each section of commands from Craft server's `Dockerfile`:
 
 > [![.img/step05a.png](.img/step05a.png)](#nolink)
@@ -504,7 +504,7 @@ $ docker ps -a && \
 
 ## Need More Containers?
 
-* The Raspberry Pi Zero is amazing for its price point, [but it's not going to run multiple containters]()
+* The Raspberry Pi Zero is amazing for its price point, [but it's not going to run a million containers](https://www.raspberrypi.org/forums/viewtopic.php?t=159001)
 * This brand has other more powerful computers if you need the horsepower, or you can look into **Docker Swarm** to cluster together multiple Pi Zeros: https://blog.hypriot.com/post/how-to-setup-rpi-docker-swarm/
 
 [![.img/nmc.png](.img/nmc.png)](#nolink)
@@ -515,15 +515,29 @@ $ docker ps -a && \
 
 ## Share Your Build!
 
-**There are several ways to share your build to help your community**
+**There are several ways to share your builds to help your community**
 
-### Github
+### GitHub
 
 * Just like the first couple `Dockerfile`s you used, they were simply hosted on my GitHub, e.g. https://raw.githubusercontent.com/atet/learn/master/virtual/Craft/Dockerfile
+* Easy as signing up for a free GitHub account and uploading your `Dockerfiles`
 
+[![.img/syba.png](.img/syba.png)](#nolink)
 
 ### Docker Hub
 
+* This is a bit more involved since you're actually sending your built image to Docker Hub (like my `mariadb_image` you used in step [6.5. "_One service per container_"](#65-"one-service-per-container"))
+* This will save others time since they won't have to do anything else but download the pre-built image
+* Sign up for a free account at Docker Hub: https://hub.docker.com/
+* Once you have a working `Dockerfile`, run these commands in the same directory:
+
+```
+$ docker login --username=<USERNAME> --password=<PASSWORD OR ACCESS TOKEN>
+$ docker build -t <USERNAME>/<NAME YOU WANT TO GIVE IMAGE>:latest .
+$ docker push <USERNAME>/<SAME IMAGE NAME AS ABOVE>:latest
+```
+
+[![.img/sybb.png](.img/sybb.png)](#nolink)
 
 [Back to Top](#table-of-contents)
 
