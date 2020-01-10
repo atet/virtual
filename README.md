@@ -248,7 +248,7 @@ $ cd ~ && mkdir Craft && cd ~/Craft && \
 ### 5.2. Image build
 
 * Now that we have the instructions, let's build the image by running this next command:
-   * Coffee break #2: This will take 10 mins. to build, but you can review the next point which talks about the anatomy of a `Dockerfile` while you wait
+   * Coffee break #2: This will take 15 mins. to build, but you can review the next point which talks about the anatomy of a `Dockerfile` while you wait
 
 ```
 $ docker image build -t craft_image .
@@ -334,13 +334,11 @@ $ cd ~ && mkdir Nextcloud && cd ~/Nextcloud && \
 ### 6.2. Image build
 
 * Now that we have the instructions, let's build the image:
-   * Coffee break #3: This will take 20 mins. to build, but you can review the next point which talks saving time with layers
+   * Coffee break #3: This will take 15 mins. to build, but you can review the next point which talks saving time with layers
 
-> ```
-> $ docker image build -t nextcloud_image .
-> ```
-> 
-> **IMPORTANT**: At about 20 mins., if you don't see the terminal going back to "`pi@raspberrypi:~/Craft $ _`" the screen may be "stuck", just click on the terminal and press Enter a couple times
+```
+$ docker image build -t nextcloud_image .
+```
 
 **While Docker builds the image, let's talk about "`layers`"**
 
@@ -552,6 +550,7 @@ $ docker push <USERNAME>/<SAME IMAGE NAME AS ABOVE>:latest
 Description | Link
 --- | ---
 Official `Dockerfile` Best Practices | https://docs.docker.com/v17.09/engine/userguide/eng-image/dockerfile_best-practices/
+Official Docker Images (for Pi Zero) | https://hub.docker.com/u/arm32v6/
 
 [Back to Top](#table-of-contents)
 

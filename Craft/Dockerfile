@@ -1,10 +1,8 @@
-FROM balenalib/raspberry-pi-debian:buster
+FROM arm32v6/alpine
 MAINTAINER Athit Kao (github.com/atet)
-RUN printf "deb-src http://raspbian.raspberrypi.org/raspbian/ buster main contrib non-free rpi" >> \
-   /etc/apt/sources.list
-RUN apt-get update
-RUN apt-get install -y apt-utils git
-RUN apt-get install -y python-pip build-essential
+RUN apk update
+RUN apk add --update --no-cache git
+RUN apk add --update --no-cache gcc python py-pip musl-dev
 RUN python -m pip install requests
 RUN git clone https://github.com/atet/Craft.git /usr/local/Craft
 WORKDIR "/usr/local/Craft/"
