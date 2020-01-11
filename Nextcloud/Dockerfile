@@ -1,16 +1,21 @@
-FROM balenalib/raspberry-pi-debian:buster
-MAINTAINER Athit Kao (github.com/atet)
-RUN printf "deb-src http://raspbian.raspberrypi.org/raspbian/ buster main contrib non-free rpi" >> \
-   /etc/apt/sources.list
-RUN apt-get update
-RUN apt-get install -y apt-utils git
-RUN apt-get install -y apache2 python-mysqldb php php-gd php-curl php-zip php-xml php-mbstring \
-   libapache2-mod-php php-mysql
-WORKDIR "/var/www/html"
-RUN git clone https://github.com/atet/nextcloud.git
-RUN mkdir -p /var/www/html/nextcloud/data
-RUN chown www-data:www-data /var/www/html/nextcloud/data
-RUN chmod 750 /var/www/html/nextcloud/data
-RUN chown www-data:www-data /var/www/html/nextcloud/config /var/www/html/nextcloud/apps
+FROM arm32v6/alpine
+RUN apk update
+RUN apk add --update --no-cache lighttpd php-cgi
+RUN apk add --update --no-cache nextcloud-mysql
+RUN mv /etc/lighttpd/lighttpd.conf /etc/lighttpd/lighttpd.conf.BAK
+RUN sed "s/#   include \"mod_fastcgi.conf\"/   include \"mod_fastcgi.conf\"/" \
+   /etc/lighttpd/lighttpd.conf.BAK > /etc/lighttpd/lighttpd.conf
+RUN ln -s /usr/share/webapps/nextcloud /var/www/localhost/htdocs
+RUN mkdir -p /var/www/localhost/htdocs/nextcloud/data
+RUN chmod 750 /var/www/localhost/htdocs/nextcloud/data
+RUN adduser -u 82 -D -S -G www-data www-data
+RUN chown www-data:www-data /var/www/localhost/htdocs/nextcloud/data
+RUN chown www-data:www-data /var/www/localhost/htdocs/nextcloud/config
+RUN chown www-data:www-data /var/www/localhost/htdocs/nextcloud/apps
+RUN cp /var/www/localhost/htdocs/nextcloud/index.html /var/www/localhost/htdocs/index.html 
+RUN printf "$(date)<br><?php phpinfo(); ?>" > /var/www/localhost/htdocs/index.php
+RUN mkdir /var/run/lighttpd
+RUN touch /var/run/lighttpd/php-fastcgi.socket
+RUN chown -R lighttpd:lighttpd /var/run/lighttpd
 EXPOSE 80
-CMD ["apachectl", "-D", "FOREGROUND"]
+CMD ["/usr/sbin/lighttpd", "-f", "/etc/lighttpd/lighttpd.conf"]

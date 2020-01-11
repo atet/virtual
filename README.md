@@ -40,18 +40,19 @@
 
 ## 0. Requirements
 
-**You must set up your Raspberry Pi Zero W using the following instructions**
+**If you have completed the first two tutorials, you have already met these requirements**
 
-### Software
+### Command Line Terminal
 
-* Windows: This tutorial was developed on Microsoft Windows 10 with Windows Subsystem for Linux (WSL) and [Docker CE (Community Edition) v19.03.5](https://hub.docker.com/editions/community/docker-ce-server-debian)
+* Windows: This tutorial was developed on Microsoft Windows 10 with Windows Subsystem for Linux (WSL)
 * MacOS: [Your Terminal program is Bash](https://en.wikipedia.org/wiki/Terminal_(macOS))
 * Linux: I recommend Ubuntu 18.04 LTS
 
 ### Computer Hardware
 
-* This tutorial uses the $10 Raspberry Pi Zero W ("wireless")
-* You will also need a 5V micro USB cell phone charger and ≥8 GB microSD card
+* The $10 Raspberry Pi Zero W ("wireless")
+* Cell phone charger (5V) with micro USB
+* ≥8 GB microSD card
 
 ### WiFi Network
 
@@ -60,6 +61,7 @@
 * 2.4 GHz b/g/n WiFi-only
 * Connect to WiFi using only the network name (a.k.a. SSID) and password
 * Disabled ["wireless isolation" (a.k.a. AP isolation, station isolation, or client isolation)](https://www.howtogeek.com/179089/lock-down-your-wi-fi-network-with-your-routers-wireless-isolation-option/)
+* Broadband internet connection (≥10 Mbps)
 
 **Once you have everything here, you're ready to go!**
 
@@ -69,7 +71,9 @@
 
 ## 1. Pi: Installation, Connection, Update
 
-* Please follow sections 2 and 4 in [Atet's 15 Minute Introduction to Raspberry Pi](https://github.com/atet/learn/blob/master/raspberrypi/README.md#atet--learn--raspberrypi):
+**Even if you have completed the first two tutorials, I highly recommend you start over from scratch**
+
+* Please follow sections 2 and 4 in [Atet's 15 Minute Introduction to Raspberry Pi](https://github.com/atet/learn/blob/master/raspberrypi/README.md#atet--learn--raspberrypi) to setup your Pi:
 
    2. [Installation](https://github.com/atet/learn/tree/master/raspberrypi#2-installation)
    3. [Connection](https://github.com/atet/learn/tree/master/raspberrypi#3-connection)
@@ -87,13 +91,13 @@
 **Recall from the previous tutorials where we made a fun multiplayer Craft server and a Nextcloud file server**
 
 * You had to _wait_ while burning the OS, _wait_ for OS install, _wait_ for updates, _wait_ while installing dependencies, _wait_ _wait_ _wait_...
-* If you were lucky enough to make a mistake and start over, you would've experienced the joys of.. **more coffee breaks**
+* If you were _lucky_ enough to make a mistake and start over, you would've experienced the joys of.. **_more coffee breaks_**
 
-**This tutorial will setup your Pi Zero to quickly install and configure applications through _virtualization_, where:**
+**This tutorial will setup your Pi Zero to quickly install and configure programs through _virtualization_, where:**
 
 * Mistakes won't permanently affect your Pi's operating system
 * How you install and configure programs are precisely written out as a document
-* You can use pre-made instructions to get a head start on installing applications
+* You can use pre-made instructions to get a head start on installing programs and their dependencies
 
 [Back to Top](#table-of-contents)
 
@@ -101,11 +105,13 @@
 
 ## 3. Docker Installation and Setup
 
-**Log into your Raspberry Pi Zero W: These instructions are specific to the Pi Zero's hardware and may not work on other computers**
-
-[![.img/step03c.png](.img/step03c.png)](#nolink)
+**To quickly install and manage programs through virtualization, we will use the Docker framework**
 
 ### 3.1. Add Docker repository
+
+* Log into your Raspberry Pi Zero W from your computer:
+
+[![.img/step03c.png](.img/step03c.png)](#nolink)
 
 * Add a security key to allow you to download from the official Docker repository:
 
@@ -177,6 +183,7 @@ $ sudo systemctl enable docker && \
 
 ### 4.1. Download and run
 
+* Each computer that Docker virtualizes is called a "container"
 * The following command will start a simulation of a barebones Linux computer on your Pi that will just **print out a message for you**:
 
 ```
@@ -270,7 +277,7 @@ $ docker image build -t craft_image .
 > 6. "`EXPOSE`" will allow the outside world to communicate to the container
 > 7. "`CMD`" will run the "`server.py`" program
 >
-> **NOTE**: This is an earlier version of the `Dockerfile` for this tutorial that took 50 mins. to build, current version takes 10 mins.
+> **NOTE**: This is the earlier version of the Craft `Dockerfile` that took 50 mins. to build, the current version is different and takes only 10 mins.
 
 ### 5.3. Deploy container
 
@@ -346,7 +353,9 @@ $ docker image build -t nextcloud_image .
 * That's because the previous Craft image build already downloaded the base image and ran the same first four commands
 * **Docker will keep these layers to save time**: This probably shaved off a good 10 minutes!
 
-[![.img/step06a.png](.img/step06a.png)](#nolink)
+> [![.img/step06a.png](.img/step06a.png)](#nolink)
+>
+> **NOTE**: This is the earlier version of the Nextcloud `Dockerfile`, the current version's build process will look different
 
 ### 6.3. Deploy container
 
@@ -369,7 +378,7 @@ $ docker run -d -p 80:80 --name nextcloud_container nextcloud_image
 [![.img/step06b.png](.img/step06b.png)](#nolink)
 
 * **Trying to setup the same way as before produced an error!**
-* Looks like we never actually setup the MariaDB database...
+* Looks like we never actually setup the MariaDB database like we did in the previous tutorial
 * **We must shut down and erase** the `nextcloud_container` before we move on:
 
 > ```
@@ -385,7 +394,7 @@ $ docker run -d -p 80:80 --name nextcloud_container nextcloud_image
 > 
 > [![.img/step06f.png](.img/step06f.png)](#nolink)
 
-* Let's run a separate MariaDB container for Nextcloud from my Docker Hub:
+* Let's run a separate MariaDB container from my Docker Hub:
 
 ```
 $ docker run -d --name mariadb_container atetkao/mariadb_image:latest
@@ -440,8 +449,8 @@ $ docker ps -a && \
 ## 7. Epilogue
 
 * I hope the practical experience from my three tutorials using the Raspberry Pi illuminates how useful Docker can be:
-   * Test different configurations of your "stack" of services (e.g. Apache + MariaDB) without affecting the host computer
    * Quickly use other's known working configurations
+   * Test different configurations of your "stack" of services without affecting the host computer; e.g. Nextcloud needed **L**inux + **A**pache + **M**ariaDB + **P**HP = **LAMP** stack
 * Although you can set up the Nextcloud container to persist data, for the most part, Docker containers are meant to be "ephemeral" (i.e. they do their thing and then disappear)
 
 > [![.img/step08a.png](.img/step08a.png)](#nolink)
@@ -491,7 +500,7 @@ $ docker ps -a && \
 > 6. "`EXPOSE`" will allow the outside world to communicate to the container
 > 7. "`CMD`" will run the "`server.py`" program
 >
-> **NOTE**: This is an earlier version of the `Dockerfile` for this tutorial, current version has less instructions because it pulls a pre-built version of Craft
+> **NOTE**: This is an earlier version of the Craft `Dockerfile`, the current version has less instructions because it pulls a pre-built version of Craft
 
 ### B. Layers
 
