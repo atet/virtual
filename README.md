@@ -372,13 +372,13 @@ $ docker run -d -p 80:80 --name nextcloud_container nextcloud_image
 
 * You can now connect to the `nextcloud_container` by the Pi's IP address from your web browser to setup Nextcloud
    * Reminder: You have erased the previous Nextcloud installation from the previous tutorial to start over here
-   * Username: admin
-   * Password: admin
-   * Data Folder: Leave as default "/var/lib/nextcloud/data"
-   * Database user: "ncuser"
-   * Database password: "password"
-   * Database name: "nextcloud"
-   * Database host: "localhost"
+   * Username: "`admin`"
+   * Password: "`admin`"
+   * Data Folder: Leave as default "`/var/lib/nextcloud/data`"
+   * Database user: "`ncuser`"
+   * Database password: "`password`"
+   * Database name: "`nextcloud`"
+   * Database host: Leave as default "`localhost`"
 
 [![.img/step06b.png](.img/step06b.png)](#nolink)
 
@@ -417,7 +417,7 @@ $ docker run -d -p 80:80 --name nextcloud_container --link mariadb_container nex
 [![.img/step06d.png](.img/step06d.png)](#nolink)
 
 * Now that we see both `nextcloud_container` and `mariadb_container` up and running, we can go back to our web browser and successfully finish the Nextcloud setup:
-   * Use the same credentials above **BUT change database host to: "mariadb_container"**
+   * Use the same credentials above **BUT change database host to: "`mariadb_container`"**
    * Setup processing will take ~5 mins.
 
 [![.img/step06e.png](.img/step06e.png)](#nolink)
