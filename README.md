@@ -294,8 +294,11 @@ $ docker run -d -p 4080:4080 --name craft_container craft_image
 
 ### 5.4. Connect to Craft server
 
-* You can now connect to the `craft_container` by the Pi's IP address
-* [Click here if you need to go through the Craft client tutorial again](https://github.com/atet/learn/tree/master/raspberrypi#6-craft-client)
+* You can now connect to the `craft_container` by the Pi's IP address like you did in the previous tutorial:
+   1. Download and extract Craft client game
+   2. Run game
+   3. Connect to the Pi's Craft multiplayer server that you just made in Docker (a.k.a. the `craft_container`) within the game
+   * [Click here if you need to go through the Craft client tutorial again](https://github.com/atet/learn/tree/master/raspberrypi#6-craft-client)
 
 [![.img/step05c.png](.img/step05c.png)](#nolink)
 
