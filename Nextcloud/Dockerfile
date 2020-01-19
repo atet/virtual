@@ -18,4 +18,4 @@ RUN mkdir /var/run/lighttpd
 RUN touch /var/run/lighttpd/php-fastcgi.socket
 RUN chown -R lighttpd:lighttpd /var/run/lighttpd
 EXPOSE 80
-CMD ["/usr/sbin/lighttpd", "-f", "/etc/lighttpd/lighttpd.conf"]
+CMD ["/usr/sbin/lighttpd", "-D", "-f", "/etc/lighttpd/lighttpd.conf"]
