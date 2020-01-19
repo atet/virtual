@@ -367,9 +367,10 @@ $ docker run -d -p 80:80 --name nextcloud_container nextcloud_image
 
 ### 6.4. Connect to Nextcloud server
 
-* You can now connect to the `nextcloud_container` by the Pi's IP address from your web browser
-   * Choose a username and password for the Nextcloud administrator account
-   * Data Folder: Leave as default "/var/www/html/nextcloud/data"
+* You can now connect to the `nextcloud_container` by the Pi's IP address from your web browser to setup Nextcloud
+   * Reminder: you have erased the previous Nextcloud installation from the previous tutorial to start over
+   * Choose a username and password for the Nextcloud administrator account (can be the same as the previous tutorial)
+   * Data Folder: Leave as default "/var/lib/nextcloud/data"
    * Database user: "ncuser"
    * Database password: "password"
    * Database name: "nextcloud"
