@@ -42,15 +42,25 @@
 
 **If you have completed the first two tutorials, you have already met these requirements**
 
-### Command Line Terminal
+### Software
 
-* Windows: This tutorial was developed on Microsoft Windows 10 with Windows Subsystem for Linux (WSL)
-* MacOS: [Your Terminal program is Bash](https://en.wikipedia.org/wiki/Terminal_(macOS))
-* Linux: I recommend Ubuntu 18.04 LTS
+We will use a Linux a command line interface (CLI) available on all major operating systems
 
-### Computer Hardware
+#### Windows 10
 
-* The $10 Raspberry Pi Zero W ("wireless")
+* Windows Subsystem for Linux (WSL) is a fully supported Microsoft product for Windows 10, learn how to install it here: https://github.com/atet/wsl
+
+#### MacOS
+
+* You do not need to install anything, [your Terminal program is Bash](https://en.wikipedia.org/wiki/Terminal_(macOS))
+
+#### Linux
+
+* I recommend using Ubuntu 20.04 LTS
+
+### Hardware
+
+* The $10 Raspberry Pi Zero W ("wireless") computer
 * Cell phone charger (5V) with micro USB
 * ≥8 GB microSD card
 
