@@ -1,10 +1,10 @@
-# [atet](https://github.com/atet) / [learn](https://github.com/atet/learn#atet--learn) / [**_virtual_**](https://github.com/atet/learn/blob/master/virtual/README.md#atet--learn--virtual)
+# [atet](https://github.com/atet) / [**_virtual_**](https://github.com/atet/virtual?tab=readme-ov-file#atet--virtual)
 
 [![.img/logo_docker.png](.img/logo_docker.png)](#nolink)
 
 # Introduction to Virtualization
 
-**This tutorial is part of my series on System Administration:<br>I highly recommend finishing my<br>[15 Minute Introduction to Raspberry Pi](https://github.com/atet/learn/blob/master/raspberrypi/README.md#atet--learn--raspberrypi) and<br>[15 Minute Introduction to Network Attached Storage](https://github.com/atet/learn/blob/master/nas/README.md#atet--learn--nas)<br>to put the goals of this tutorial in a realistic context**
+**This tutorial is part of my series on System Administration:<br>I highly recommend finishing my<br>[15 Minute Introduction to Raspberry Pi](https://github.com/atet/raspberrypi?tab=readme-ov-file#atet--raspberrypi) and<br>[15 Minute Introduction to Network Attached Storage](https://github.com/atet/nas?tab=readme-ov-file#atet--nas)<br>to put the goals of this tutorial in a realistic context**
 
 **Estimated time to completion: 15 minutes**<br>(excluding waiting times for downloads and updates)
 
@@ -83,13 +83,13 @@ We will use a Linux a command line interface (CLI) available on all major operat
 
 **Even if you have completed the first two tutorials, I highly recommend you start over from scratch**
 
-* Please follow sections 2 and 4 in [Atet's 15 Minute Introduction to Raspberry Pi](https://github.com/atet/learn/blob/master/raspberrypi/README.md#atet--learn--raspberrypi) to setup your Pi:
+* Please follow sections 2 and 4 in [Atet's 15 Minute Introduction to Raspberry Pi](https://github.com/atet/raspberrypi?tab=readme-ov-file#atet--raspberrypi) to setup your Pi:
 
-   2. [Installation](https://github.com/atet/learn/tree/master/raspberrypi#2-installation)
-   3. [Connection](https://github.com/atet/learn/tree/master/raspberrypi#3-connection)
-   4. [Updating](https://github.com/atet/learn/tree/master/raspberrypi#4-updating)
+   2. [Installation](https://github.com/atet/raspberrypi#2-installation)
+   3. [Connection](https://github.com/atet/raspberrypi#3-connection)
+   4. [Updating](https://github.com/atet/raspberrypi#4-updating)
 
-* If you have any issues, please see [Troubleshooting for Raspberry Pi](https://github.com/atet/learn/tree/master/raspberrypi#troubleshooting)
+* If you have any issues, please see [Troubleshooting for Raspberry Pi](https://github.com/atet/raspberrypi#troubleshooting)
 * Take note of your Raspberry Pi's current IP address for later
 
 [Back to Top](#table-of-contents)
@@ -125,7 +125,7 @@ We will use a Linux a command line interface (CLI) available on all major operat
 
 * Add a security key to allow you to download from the official Docker repository:
 
-```
+```bash
 $ curl -fsSL https://download.docker.com/linux/$(. /etc/os-release; echo "$ID")/gpg | \
   sudo apt-key add - && \
   echo "deb [arch=armhf] https://download.docker.com/linux/$(. /etc/os-release; echo "$ID") \
@@ -143,7 +143,7 @@ $ curl -fsSL https://download.docker.com/linux/$(. /etc/os-release; echo "$ID")/
 * Install the following dependencies and Docker:
    * Coffee break: This will take ~10 mins. and you don't need to babysit this
 
-```
+```bash
 $ sudo apt update && \
   sudo apt install -y \
      apt-transport-https \
@@ -161,7 +161,7 @@ $ sudo apt update && \
 * Add the default user "`pi`" to the "`docker`" permissions group and log out for the change to take effect running `sudo usermod -aG docker $USER && exit`
 * **This will log you out**, just log back into your Pi
 
-```
+```bash
 $ sudo usermod -aG docker $USER && exit
 
 logout
@@ -172,7 +172,7 @@ $ ssh pi@<PI'S IP ADDRESS>
 
 * Once you log back in, you must start the Docker service
 
-```
+```bash
 $ sudo systemctl enable docker && \
   sudo systemctl start docker
 ```
@@ -196,7 +196,7 @@ $ sudo systemctl enable docker && \
 * Each computer that Docker virtualizes is called a "container"
 * The following command will start a simulation of a barebones Linux computer on your Pi that will just **print out a message for you**:
 
-```
+```bash
 $ docker run --name my_first_container hypriot/armhf-hello-world
 ```
 
@@ -208,14 +208,14 @@ $ docker run --name my_first_container hypriot/armhf-hello-world
 
 * You can check what containers you have made by running the following:
 
-```
+```bash
 $ docker ps -a
 ```
 
 * For Docker to make this container, an "image" of the barebones Linux installation had to be downloaded
 * You can check what images you've downloaded by running the following:
 
-```
+```bash
 $ docker images -a
 ```
 
@@ -229,7 +229,7 @@ $ docker images -a
 
 * Since we don't need the container or the image for the rest of this tutorial, we can **delete them to regain disk space**:
 
-```
+```bash
 $ docker rm my_first_container
 $ docker rmi hypriot/armhf-hello-world
 ```
@@ -249,7 +249,7 @@ $ docker rmi hypriot/armhf-hello-world
 
 ## 5. Craft Container
 
-**If you recall from my [15 Minute Introduction to Raspberry Pi](https://github.com/atet/learn/blob/master/raspberrypi/README.md#atet--learn--raspberrypi), we made a Craft multiplayer game server**
+**If you recall from my [15 Minute Introduction to Raspberry Pi](https://github.com/atet/raspberrypi?tab=readme-ov-file#atet--raspberrypi), we made a Craft multiplayer game server**
 
 ### 5.1. `Dockerfile`
 
@@ -257,9 +257,9 @@ $ docker rmi hypriot/armhf-hello-world
 * These instructions are put into a "`Dockerfile`"
 * Let's make a new directory and download this file from my GitHub:
 
-```
+```bash
 $ cd ~ && mkdir Craft && cd ~/Craft && \
-  wget https://raw.githubusercontent.com/atet/learn/master/virtual/Craft/Dockerfile
+  wget https://raw.githubusercontent.com/atet/virtual/main/Craft/Dockerfile
 ```
 
 ### 5.2. Image build
@@ -267,7 +267,7 @@ $ cd ~ && mkdir Craft && cd ~/Craft && \
 * Now that we have the instructions, let's build the image by running this next command:
    * Coffee break #2: This will take 15 mins. to build, but you can review the next point which talks about the anatomy of a `Dockerfile` while you wait
 
-```
+```bash
 $ docker image build -t craft_image .
 ```
 
@@ -287,13 +287,13 @@ $ docker image build -t craft_image .
 > 6. "`EXPOSE`" will allow the outside world to communicate to the container
 > 7. "`CMD`" will run the "`server.py`" program
 >
-> **NOTE**: This is the earlier version of the Craft `Dockerfile` that took 50 mins. to build, the current version is different and takes only 10 mins.
+> **NOTE**: This is the earlier version of the Craft `Dockerfile` that took 50 mins. to build, the current version is different and takes only 10 mins; good to know you can optimize `Dockerfile`s...
 
 ### 5.3. Deploy container
 
 * Once the image is done building, we will deploy a container based on "`craft_image`":
 
-```
+```bash
 $ docker run -d -p 4080:4080 --name craft_container craft_image
 ```
 
@@ -305,10 +305,10 @@ $ docker run -d -p 4080:4080 --name craft_container craft_image
 ### 5.4. Connect to Craft server
 
 * You can now connect to the `craft_container` by the Pi's IP address like you did in the previous tutorial:
+   * [Click here if you need to go through the Craft client tutorial again](https://github.com/atet/raspberrypi#6-craft-client)
    1. Download and extract Craft client game
    2. Run game
    3. Connect to the Pi's Craft multiplayer server that you just made in Docker (a.k.a. the `craft_container`) within the game
-   * [Click here if you need to go through the Craft client tutorial again](https://github.com/atet/learn/tree/master/raspberrypi#6-craft-client)
 
 [![.img/step05c.png](.img/step05c.png)](#nolink)
 
