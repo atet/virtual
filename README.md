@@ -4,7 +4,9 @@
 
 # Introduction to Virtualization
 
-**This tutorial is part of my series on System Administration:<br>I highly recommend finishing my<br>[15 Minute Introduction to Raspberry Pi](https://github.com/atet/raspberrypi?tab=readme-ov-file#atet--raspberrypi) and<br>[15 Minute Introduction to Network Attached Storage](https://github.com/atet/nas?tab=readme-ov-file#atet--nas)<br>to put the goals of this tutorial in a realistic context**
+**This tutorial is part of my series on System Administration**<br>I highly recommend finishing my preceding tutorials first so that the goals of this tutorial are in a more realistic context:
+- [15 Minute Introduction to Raspberry Pi](https://github.com/atet/raspberrypi?tab=readme-ov-file#atet--raspberrypi)
+- [15 Minute Introduction to Network Attached Storage](https://github.com/atet/nas?tab=readme-ov-file#atet--nas)<br><br>
 
 **Estimated time to completion: 15 minutes**<br>(excluding waiting times for downloads and updates)
 
@@ -304,8 +306,7 @@ $ docker run -d -p 4080:4080 --name craft_container craft_image
 
 ### 5.4. Connect to Craft server
 
-* You can now connect to the `craft_container` by the Pi's IP address like you did in the previous tutorial:
-   * [Click here if you need to go through the Craft client tutorial again](https://github.com/atet/raspberrypi#6-craft-client)
+* You can now connect to the `craft_container` by the Pi's IP address like you did in the previous tutorial ([Click here if you need to go through the Craft client tutorial again](https://github.com/atet/raspberrypi#6-craft-client)):
    1. Download and extract Craft client game
    2. Run game
    3. Connect to the Pi's Craft multiplayer server that you just made in Docker (a.k.a. the `craft_container`) within the game
@@ -316,7 +317,7 @@ $ docker run -d -p 4080:4080 --name craft_container craft_image
 
 * Once you're done playing some Craft, let's erase this container for now (this won't erase the underlying image you built)
 
-```
+```bash
 $ docker rm craft_container
 ```
 
@@ -324,7 +325,7 @@ $ docker rm craft_container
 * Unlike our first container that just printed out "`Hello from Docker.`" and shut itself down, `craft_container` will remain active
 * Let's stop the container first, then erase it (and confirm it's gone):
 
-```
+```bash
 $ docker stop craft_container
 $ docker rm craft_container
 $ docker ps -a
@@ -338,7 +339,7 @@ $ docker ps -a
 
 ## 6. Nextcloud Container
 
-**If you recall from my [15 Minute Introduction to Network Attached Storage](https://github.com/atet/learn/blob/master/nas/README.md#atet--learn--nas), we made a Nextcloud file server**
+**If you recall from my [15 Minute Introduction to Network Attached Storage](https://github.com/atet/nas?tab=readme-ov-file#atet--nas), we made a Nextcloud file server**
 
 ### 6.1. `Dockerfile`
 
@@ -346,9 +347,9 @@ $ docker ps -a
 * Let's make a new directory and download this file from my GitHub:
    * Remember: This file must be named "`Dockerfile`", so it's best practice to separate them by directories (e.g. different directories for Craft and Nextcloud)
 
-```
+```bash
 $ cd ~ && mkdir Nextcloud && cd ~/Nextcloud && \
-  wget https://raw.githubusercontent.com/atet/learn/master/virtual/Nextcloud/Dockerfile
+  wget https://raw.githubusercontent.com/atet/virtual/main/Nextcloud/Dockerfile
 ```
 
 ### 6.2. Image build
@@ -374,7 +375,7 @@ $ docker image build -t nextcloud_image .
 
 * Once the image is done building, we will deploy a container named "`nextcloud_container`" based on "`nextcloud_image`" we built:
 
-```
+```bash
 $ docker run -d -p 80:80 --name nextcloud_container nextcloud_image
 ```
 
@@ -396,7 +397,7 @@ $ docker run -d -p 80:80 --name nextcloud_container nextcloud_image
 * Looks like we never actually setup the MariaDB database like we did in the previous tutorial
 * **We must shut down and erase** the `nextcloud_container` before we move on:
 
-> ```
+> ```bash
 > $ docker stop nextcloud_container && \
 >   docker rm nextcloud_container
 > ```
@@ -411,7 +412,7 @@ $ docker run -d -p 80:80 --name nextcloud_container nextcloud_image
 
 * Let's run a separate MariaDB container from my Docker Hub:
 
-```
+```bash
 $ docker run -d --name mariadb_container atetkao/mariadb_image:latest
 ```
 
@@ -419,7 +420,7 @@ $ docker run -d --name mariadb_container atetkao/mariadb_image:latest
 
 * Now that the previous `nextcloud_container` is erased, we will make a new one that "links" to the `mariadb_container`:
 
-```
+```bash
 $ docker run -d -p 80:80 --name nextcloud_container --link mariadb_container nextcloud_image && \
   docker ps -a
 ```
@@ -439,7 +440,7 @@ $ docker run -d -p 80:80 --name nextcloud_container --link mariadb_container nex
    * There are a few more bits and pieces to make data persistent which won't be covered here
 * Before we shut everything down, let's start a Craft container in addition to Nextcloud for fun:
 
-```
+```bash
 $ docker run -d -p 4080:4080 --name craft_container craft_image
 ```
 [![.img/step06g.png](.img/step06g.png)](#nolink)
@@ -448,7 +449,7 @@ $ docker run -d -p 4080:4080 --name craft_container craft_image
 
 * Let's shut everything down for the night:
 
-```
+```bash
 $ docker ps -a && \
   docker stop $(docker ps -a -q) && \
   docker rm $(docker ps -a -q) && \
@@ -545,7 +546,7 @@ $ docker ps -a && \
 
 ### GitHub
 
-* Just like the first couple `Dockerfile`s you used, they were simply hosted on my GitHub, e.g. https://raw.githubusercontent.com/atet/learn/master/virtual/Craft/Dockerfile
+* Just like the first couple `Dockerfile`s you used, they were simply hosted on my GitHub, e.g. https://raw.githubusercontent.com/atet/virtual/main/Craft/Dockerfile
 * Easy as signing up for a free GitHub account and uploading your `Dockerfiles`
 
 [![.img/syba.png](.img/syba.png)](#nolink)
@@ -557,7 +558,7 @@ $ docker ps -a && \
 * Sign up for a free account at Docker Hub: https://hub.docker.com/
 * Once you have a working `Dockerfile`, run these commands in the same directory:
 
-```
+```bash
 $ docker login --username=<USERNAME> --password=<PASSWORD OR ACCESS TOKEN>
 $ docker build -t <USERNAME>/<NAME YOU WANT TO GIVE IMAGE>:latest .
 $ docker push <USERNAME>/<SAME IMAGE NAME AS ABOVE>:latest
@@ -584,7 +585,8 @@ Official Docker Images (for Pi Zero) | https://hub.docker.com/u/arm32v6/
 
 Issue | Solution
 --- | ---
-Docker seems to be frozen or hanging | Click on the terminal and press Enter a couple times, if that doesn't work, you may have to wait a while longer
+Docker seems to be frozen or hanging... | Click on the terminal and press Enter a couple times, if that doesn't work, you may have to wait a while longer
+Can I use Docker for commercial purposes? | This tutorial uses Docker Engine (a.k.a. CLI) and is Apache 2.0 licensed (https://docs.docker.com/engine/#licensing) while Docker Desktop, _not used in this tutorial_, would require a subscription for commercial use (https://docs.docker.com/subscription/#docker-desktop-license-agreement)
 
 [Back to Top](#table-of-contents)
 
